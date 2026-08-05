@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[NOME DA ACADEMIA] - Transforme seu Corpo</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           VARIÁVEIS DE TEMA (Arquitetura Escalável)
+           ========================================= */
+        :root {
+            --cor-primaria: #FF6B00;
+            --cor-primaria-hover: #FF8533;
+            --cor-fundo: #050505;
+            --cor-texto: #FFFFFF;
+            --cor-texto-secundario: #A0A0A0;
+            
+            /* Curva de animação premium (buttery smooth) */
+            --easing-premium: cubic-bezier(0.16, 1, 0.3, 1);
+            --transicao: all 0.4s var(--easing-premium);
+        }
+
+        /* =========================================
+           RESET E BASE
+           ========================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Textura de fundo sutil em movimento */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform: rotate(-15deg);
+            z-index: 0;
+            pointer-events: none;
+            animation: gridMove 20s linear infinite;
+        }
+
+        /* =========================================
+           CABEÇALHO
+           ========================================= */
+        header {
+            width: 100%;
+            padding: 30px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            z-index: 10;
+            animation: fadeDown 1s var(--easing-premium) forwards;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--cor-texto);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            transition: var(--transicao);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 20px rgba(255, 107, 0, 0.4);
+        }
+
+        .logo span {
+            color: var(--cor-primaria);
+        }
+
+        /* =========================================
+           ÁREA PRINCIPAL
+           ========================================= */
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .conteudo-hero {
+            max-width: 900px;
+            z-index: 2;
+            perspective: 1000px;
+        }
+
+        /* Animações em cascata (Staggered) */
+        h1, p, .grupo-botoes {
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeUp 1s var(--easing-premium) forwards;
+        }
+
+        h1 { animation-delay: 0.2s; }
+        p { animation-delay: 0.4s; }
+        .grupo-botoes { animation-delay: 0.6s; }
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 900;
+            line-height: 1.05;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        h1 span {
+            color: var(--cor-primaria);
+            display: inline-block;
+            position: relative;
+        }
+
+        /* Efeito sutil de pulso no texto laranja */
+        h1 span::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--cor-primaria);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.6s var(--easing-premium);
+            animation: lineDraw 1s var(--easing-premium) 0.8s forwards;
+        }
+
+        p {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--cor-texto-secundario);
+            margin-bottom: 48px;
+            font-weight: 400;
+            max-width: 600px;
+            margin-inline: auto;
+            line-height: 1.6;
+        }
+
+        /* =========================================
+           BOTÕES (Micro-interações avançadas)
+           ========================================= */
+        .grupo-botoes {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            position: relative;
+            padding: 18px 45px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-radius: 4px;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: var(--transicao);
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Botão Primário */
+        .btn-primario {
+            background-color: var(--cor-primaria);
+            color: var(--cor-fundo);
+            border: 2px solid var(--cor-primaria);
+            box-shadow: 0 10px 30px -10px rgba(255, 107, 0, 0.5);
+        }
+
+        .btn-primario:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -10px rgba(255, 107, 0, 0.7);
+            background-color: var(--cor-primaria-hover);
+        }
+
+        /* Botão Secundário com efeito de preenchimento deslizante */
+        .btn-secundario {
+            background-color: transparent;
+            color: var(--cor-texto);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secundario::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--cor-texto);
+            transform: translateX(-101%);
+            transition: transform 0.4s var(--easing-premium);
+            z-index: -1;
+        }
+
+        .btn-secundario:hover {
+            color: var(--cor-fundo);
+            border-color: var(--cor-texto);
+            transform: translateY(-5px);
+        }
+
+        .btn-secundario:hover::before {
+            transform: translateX(0);
+        }
+
+        /* =========================================
+           BRILHO INTERATIVO (Segue o Mouse)
+           ========================================= */
+        .brilho-interativo {
+            position: fixed;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,107,0,0.15) 0%, rgba(0,0,0,0) 60%);
+            top: 0; left: 0;
+            transform: translate(calc(var(--mouse-x, 50vw) - 50%), calc(var(--mouse-y, 50vh) - 50%));
+            z-index: 1;
+            pointer-events: none;
+            transition: transform 0.1s linear; /* Atualização rápida pro JS */
+        }
+
+        /* =========================================
+           KEYFRAMES (Movimentos)
+           ========================================= */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes gridMove {
+            from { transform: rotate(-15deg) translateY(0); }
+            to { transform: rotate(-15deg) translateY(-40px); }
+        }
+
+        @keyframes lineDraw {
+            from { transform: scaleX(0); transform-origin: left; }
+            to { transform: scaleX(1); transform-origin: left; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="#" class="logo">
+            [NOME DA <span>ACADEMIA</span>]
+        </a>
+    </header>
+
+    <main>
+        <!-- Elemento de luz que será controlado pelo Javascript -->
+        <div class="brilho-interativo"></div>
+        
+        <div class="conteudo-hero">
+            <h1>Supere seus <br><span>Limites</span></h1>
+            <p>O ambiente perfeito para resultados reais. Acesse sua conta para gerenciar seus treinos ou junte-se à nossa comunidade de alta performance.</p>
+            
+           <div class="grupo-botoes">
+    <!-- Apontando os dois botões para a nova página de autenticação -->
+    <a href="login.html" class="btn btn-primario">Fazer Login</a>
+    <a href="login.html" class="btn btn-secundario">Cadastrar-se</a>
+</div>
+        </div>
+    </main>
+
+    <!-- JS Leve para interatividade avançada -->
+    <script>
+        // Script para fazer o glow laranja seguir o mouse suavemente
+        const luz = document.querySelector('.brilho-interativo');
+        
+        // Posição inicial no centro
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Usando variáveis CSS (Custom Properties) para performance máxima
+            // sem reflow no DOM
+            requestAnimationFrame(() => {
+                luz.style.setProperty('--mouse-x', `${mouseX}px`);
+                luz.style.setProperty('--mouse-y', `${mouseY}px`);
+            });
+        });
+    </script>
+</body>
+</html>

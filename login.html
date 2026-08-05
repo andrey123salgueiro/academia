@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[NOME DA ACADEMIA] - Acesso</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           VARIÁVEIS GLOBAIS
+           ========================================= */
+        :root {
+            --cor-primaria: #FF6B00;
+            --cor-primaria-hover: #FF8533;
+            --cor-fundo: #050505;
+            --cor-superficie: rgba(25, 25, 25, 0.6);
+            --cor-texto: #FFFFFF;
+            --cor-texto-secundario: #A0A0A0;
+            --cor-borda: rgba(255, 255, 255, 0.1);
+            
+            --easing-premium: cubic-bezier(0.16, 1, 0.3, 1);
+            --transicao: all 0.4s var(--easing-premium);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Fundo Animado (Mesmo da Landing Page) */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform: rotate(-15deg);
+            z-index: 0;
+            pointer-events: none;
+            animation: gridMove 20s linear infinite;
+        }
+
+        /* =========================================
+           CABEÇALHO SIMPLIFICADO
+           ========================================= */
+        header {
+            width: 100%;
+            padding: 30px 5%;
+            position: absolute;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--cor-texto);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        .logo span { color: var(--cor-primaria); }
+
+        /* =========================================
+           CONTAINER DE AUTENTICAÇÃO (Glassmorphism)
+           ========================================= */
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px 40px;
+            z-index: 2;
+        }
+
+        .auth-container {
+            background: var(--cor-superficie);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--cor-borda);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 480px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeUp 0.8s var(--easing-premium) forwards;
+        }
+
+        /* Abas (Tabs) */
+        .tabs {
+            display: flex;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--cor-borda);
+            position: relative;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--cor-texto-secundario);
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding: 15px 0;
+            cursor: pointer;
+            transition: var(--transicao);
+        }
+
+        .tab-btn.active {
+            color: var(--cor-primaria);
+        }
+
+        /* Linha indicadora animada */
+        .tab-indicador {
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 50%;
+            height: 2px;
+            background-color: var(--cor-primaria);
+            transition: transform 0.4s var(--easing-premium);
+        }
+
+        /* =========================================
+           FORMULÁRIOS & INPUTS (Floating Labels)
+           ========================================= */
+        .form-wrapper {
+            position: relative;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            transition: opacity 0.4s ease, transform 0.4s var(--easing-premium);
+        }
+
+        /* Classes para alternar formulários via JS */
+        .form-hide {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .form-show {
+            display: flex;
+            animation: fadeInForm 0.5s var(--easing-premium) forwards;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px 0;
+            background: none;
+            border: none;
+            border-bottom: 2px solid var(--cor-borda);
+            color: var(--cor-texto);
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transicao);
+        }
+
+        .input-group label {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            color: var(--cor-texto-secundario);
+            font-size: 1rem;
+            pointer-events: none;
+            transition: var(--transicao);
+        }
+
+        /* O Pulo do Gato: Animação do Floating Label */
+        .input-group input:focus ~ label,
+        .input-group input:valid ~ label {
+            top: -16px;
+            font-size: 0.8rem;
+            color: var(--cor-primaria);
+        }
+
+        .input-group input:focus {
+            border-bottom-color: var(--cor-primaria);
+        }
+
+        .opcoes-extras {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--cor-texto-secundario);
+            margin-top: -10px;
+        }
+
+        .opcoes-extras a {
+            color: var(--cor-texto-secundario);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .opcoes-extras a:hover {
+            color: var(--cor-primaria);
+        }
+
+        /* =========================================
+           BOTÕES
+           ========================================= */
+        .btn-submit {
+            background-color: var(--cor-primaria);
+            color: var(--cor-fundo);
+            border: none;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transicao);
+            letter-spacing: 1px;
+            margin-top: 10px;
+            box-shadow: 0 10px 20px -10px rgba(255, 107, 0, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            background-color: var(--cor-primaria-hover);
+            box-shadow: 0 15px 25px -10px rgba(255, 107, 0, 0.6);
+        }
+
+        /* =========================================
+           LUZ DE FUNDO
+           ========================================= */
+        .brilho-interativo {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,107,0,0.12) 0%, rgba(0,0,0,0) 60%);
+            top: 0; left: 0;
+            transform: translate(calc(var(--mouse-x, 50vw) - 50%), calc(var(--mouse-y, 50vh) - 50%));
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* =========================================
+           KEYFRAMES
+           ========================================= */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInForm {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes gridMove {
+            from { transform: rotate(-15deg) translateY(0); }
+            to { transform: rotate(-15deg) translateY(-40px); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">
+            [NOME DA <span>ACADEMIA</span>]
+        </a>
+    </header>
+
+    <div class="brilho-interativo"></div>
+
+    <main>
+        <div class="auth-container">
+            
+            <!-- Controle de Abas -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="trocarAba('login')">Entrar</button>
+                <button class="tab-btn" onclick="trocarAba('cadastro')">Cadastrar</button>
+                <div class="tab-indicador" id="indicador"></div>
+            </div>
+
+            <div class="form-wrapper">
+                
+                <!-- FORMULÁRIO DE LOGIN -->
+                <form id="form-login" class="form-show">
+                    <div class="input-group">
+                        <input type="email" id="email-login" required autocomplete="off">
+                        <label for="email-login">E-mail</label>
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="password" id="senha-login" required>
+                        <label for="senha-login">Senha</label>
+                    </div>
+
+                    <div class="opcoes-extras">
+                        <label>
+                            <input type="checkbox"> Lembrar de mim
+                        </label>
+                        <a href="#">Esqueceu a senha?</a>
+                    </div>
+
+                   <button type="button" class="btn-submit" onclick="window.location.href='dashboard.html'">Acessar Treinos</button>
+                </form>
+
+                <!-- FORMULÁRIO DE CADASTRO -->
+                <form id="form-cadastro" class="form-hide">
+                    <div class="input-group">
+                        <input type="text" id="nome-cadastro" required autocomplete="off">
+                        <label for="nome-cadastro">Nome Completo</label>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="email" id="email-cadastro" required autocomplete="off">
+                        <label for="email-cadastro">E-mail</label>
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="password" id="senha-cadastro" required>
+                        <label for="senha-cadastro">Criar Senha</label>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Criar Conta</button>
+                </form>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Lógica de alternância de abas
+        function trocarAba(aba) {
+            const formLogin = document.getElementById('form-login');
+            const formCadastro = document.getElementById('form-cadastro');
+            const indicador = document.getElementById('indicador');
+            const botoes = document.querySelectorAll('.tab-btn');
+
+            if (aba === 'login') {
+                formCadastro.classList.replace('form-show', 'form-hide');
+                setTimeout(() => {
+                    formLogin.classList.replace('form-hide', 'form-show');
+                }, 100); // pequeno delay para não sobrepor
+                
+                indicador.style.transform = 'translateX(0)';
+                botoes[0].classList.add('active');
+                botoes[1].classList.remove('active');
+            } else {
+                formLogin.classList.replace('form-show', 'form-hide');
+                setTimeout(() => {
+                    formCadastro.classList.replace('form-hide', 'form-show');
+                }, 100);
+                
+                indicador.style.transform = 'translateX(100%)';
+                botoes[1].classList.add('active');
+                botoes[0].classList.remove('active');
+            }
+        }
+
+        // Lógica da Luz de fundo acompanhando o mouse
+        const luz = document.querySelector('.brilho-interativo');
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            requestAnimationFrame(() => {
+                luz.style.setProperty('--mouse-x', `${mouseX}px`);
+                luz.style.setProperty('--mouse-y', `${mouseY}px`);
+            });
+        });
+    </script>
+</body>
+</html>
