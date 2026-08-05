@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[NOME DA ACADEMIA] - Minha Evolução</title>
+    
+    <!-- Fontes e Ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Biblioteca Chart.js para o Gráfico Premium -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* =========================================
+           VARIÁVEIS GLOBAIS (Mantendo o Padrão)
+           ========================================= */
+        :root {
+            --cor-primaria: #FF6B00;
+            --cor-primaria-hover: #FF8533;
+            --cor-fundo: #050505;
+            --cor-fundo-secundario: #121212;
+            --cor-superficie: rgba(25, 25, 25, 0.8);
+            --cor-texto: #FFFFFF;
+            --cor-texto-secundario: #A0A0A0;
+            --cor-borda: rgba(255, 255, 255, 0.08);
+            --cor-sucesso: #4CAF50;
+            
+            --easing-premium: cubic-bezier(0.16, 1, 0.3, 1);
+            --transicao: all 0.3s var(--easing-premium);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* =========================================
+           MENU LATERAL (SIDEBAR)
+           ========================================= */
+        .sidebar {
+            width: 280px;
+            background-color: var(--cor-fundo-secundario);
+            border-right: 1px solid var(--cor-borda);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--cor-texto);
+            text-transform: uppercase;
+            text-decoration: none;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .logo span { color: var(--cor-primaria); }
+
+        .menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 20px;
+            color: var(--cor-texto-secundario);
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: var(--transicao);
+        }
+
+        .menu-item a i { font-size: 1.3rem; transition: var(--transicao); }
+
+        .menu-item a:hover, .menu-item.ativo a {
+            background-color: rgba(255, 107, 0, 0.1);
+            color: var(--cor-primaria);
+        }
+
+        .menu-item a:hover i, .menu-item.ativo a i {
+            color: var(--cor-primaria);
+            transform: scale(1.1);
+        }
+
+        .btn-sair {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background: none;
+            border: 1px solid var(--cor-borda);
+            color: var(--cor-texto-secundario);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transicao);
+            text-decoration: none;
+        }
+
+        .btn-sair:hover {
+            background-color: rgba(255, 0, 0, 0.1);
+            color: #ff4d4d;
+            border-color: #ff4d4d;
+        }
+
+        /* =========================================
+           ÁREA PRINCIPAL (CONTEÚDO)
+           ========================================= */
+        .conteudo {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .conteudo::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            animation: fadeDown 0.8s var(--easing-premium) forwards;
+        }
+
+        .boas-vindas h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .boas-vindas p { color: var(--cor-texto-secundario); }
+
+        /* =========================================
+           GRID DE ESTATÍSTICAS E GRÁFICO
+           ========================================= */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--cor-superficie);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--cor-borda);
+            border-radius: 16px;
+            padding: 25px;
+            transition: var(--transicao);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUpCard 0.8s var(--easing-premium) forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 107, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Cascata das animações */
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card.chart-container { animation-delay: 0.4s; grid-column: 1 / -1; }
+        .card.medidas-container { animation-delay: 0.5s; grid-column: 1 / -1; }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            color: var(--cor-texto-secundario);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .card-valor {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--cor-texto);
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .card-valor span {
+            font-size: 1rem;
+            color: var(--cor-texto-secundario);
+            font-weight: 400;
+        }
+
+        .trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+
+        .trend.positivo { background: rgba(76, 175, 80, 0.1); color: var(--cor-sucesso); }
+        .trend.negativo { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; }
+
+        /* Tabela de Medidas */
+        .tabela-medidas {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .tabela-medidas th, .tabela-medidas td {
+            padding: 15px 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--cor-borda);
+        }
+
+        .tabela-medidas th {
+            color: var(--cor-texto-secundario);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .tabela-medidas tr:last-child td { border-bottom: none; }
+        
+        .tabela-medidas td.destaque {
+            color: var(--cor-primaria);
+            font-weight: 700;
+        }
+
+        /* =========================================
+           ANIMAÇÕES
+           ========================================= */
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeUpCard {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsividade Básica */
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .card.chart-container, .card.medidas-container { grid-column: 1 / -1; }
+        }
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <a href="index.html" class="logo">
+            [NOME] <span>APP</span>
+        </a>
+
+        <ul class="menu">
+            <li class="menu-item">
+                <a href="dashboard.html"><i class="ph ph-squares-four"></i> Painel</a>
+            </li>
+            <li class="menu-item">
+                <a href="#"><i class="ph ph-barbell"></i> Meus Treinos</a>
+            </li>
+            <!-- O item ATIVO agora é a Evolução -->
+            <li class="menu-item ativo">
+                <a href="evolucao.html"><i class="ph ph-chart-line-up"></i> Evolução</a>
+            </li>
+            <!-- Já deixei o link preparado para a próxima tela que você pediu -->
+            <li class="menu-item">
+                <a href="dietas.html"><i class="ph ph-apple-logo"></i> Dietas & Guias</a>
+            </li>
+            <li class="menu-item">
+                <a href="#"><i class="ph ph-user"></i> Perfil</a>
+            </li>
+        </ul>
+
+        <a href="index.html" class="btn-sair">
+            <i class="ph ph-sign-out"></i> Sair
+        </a>
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="conteudo">
+        <header>
+            <div class="boas-vindas">
+                <h1>Sua Evolução 🚀</h1>
+                <p>Acompanhe seus resultados e métricas corporais</p>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            
+            <!-- CARD: PESO -->
+            <div class="card">
+                <div class="card-header">
+                    Peso Atual
+                    <i class="ph ph-scale" style="font-size: 1.2rem; color: var(--cor-texto-secundario);"></i>
+                </div>
+                <div class="card-valor">
+                    78.5 <span>kg</span>
+                </div>
+                <!-- Simulação de perda de peso (positivo para quem quer emagrecer/definir) -->
+                <div class="trend positivo">
+                    <i class="ph ph-trend-down"></i> -2.3 kg (último mês)
+                </div>
+            </div>
+
+            <!-- CARD: GORDURA CORPORAL -->
+            <div class="card">
+                <div class="card-header">
+                    Gordura Corporal
+                    <i class="ph ph-drop" style="font-size: 1.2rem; color: var(--cor-texto-secundario);"></i>
+                </div>
+                <div class="card-valor">
+                    14.2 <span>%</span>
+                </div>
+                <div class="trend positivo">
+                    <i class="ph ph-trend-down"></i> -1.5%
+                </div>
+            </div>
+
+            <!-- CARD: MASSA MUSCULAR -->
+            <div class="card">
+                <div class="card-header">
+                    Massa Magra
+                    <i class="ph ph-barbell" style="font-size: 1.2rem; color: var(--cor-texto-secundario);"></i>
+                </div>
+                <div class="card-valor">
+                    38.4 <span>kg</span>
+                </div>
+                <div class="trend positivo" style="background: rgba(255, 107, 0, 0.1); color: var(--cor-primaria);">
+                    <i class="ph ph-trend-up"></i> +0.8 kg
+                </div>
+            </div>
+
+            <!-- CARD DO GRÁFICO (Ocupa a linha toda) -->
+            <div class="card chart-container">
+                <div class="card-header" style="margin-bottom: 20px;">Progresso de Peso (Últimos 6 meses)</div>
+                <div style="height: 300px; width: 100%;">
+                    <canvas id="evolutionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- CARD DAS MEDIDAS -->
+            <div class="card medidas-container">
+                <div class="card-header">Comparativo de Medidas (cm)</div>
+                <table class="tabela-medidas">
+                    <thead>
+                        <tr>
+                            <th>Região</th>
+                            <th>Há 3 meses</th>
+                            <th>Mês Passado</th>
+                            <th>Atual</th>
+                            <th>Evolução</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Peitoral</td>
+                            <td>98</td>
+                            <td>101</td>
+                            <td class="destaque">103</td>
+                            <td><span style="color: var(--cor-sucesso);">+5 cm</span></td>
+                        </tr>
+                        <tr>
+                            <td>Braço (Contraído)</td>
+                            <td>36</td>
+                            <td>37.5</td>
+                            <td class="destaque">38.5</td>
+                            <td><span style="color: var(--cor-sucesso);">+2.5 cm</span></td>
+                        </tr>
+                        <tr>
+                            <td>Cintura (Abdômen)</td>
+                            <td>88</td>
+                            <td>85</td>
+                            <td class="destaque">82</td>
+                            <td><span style="color: var(--cor-primaria);">-6 cm</span></td>
+                        </tr>
+                        <tr>
+                            <td>Coxa</td>
+                            <td>56</td>
+                            <td>58</td>
+                            <td class="destaque">60</td>
+                            <td><span style="color: var(--cor-sucesso);">+4 cm</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Script de Configuração do Gráfico (Chart.js) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('evolutionChart').getContext('2d');
+
+            // Criando um gradiente laranja para o fundo do gráfico
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(255, 107, 0, 0.5)'); // Laranja translúcido no topo
+            gradient.addColorStop(1, 'rgba(255, 107, 0, 0.0)'); // Transparente na base
+
+            const evolutionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun (Atual)'],
+                    datasets: [{
+                        label: 'Peso (kg)',
+                        data: [85.2, 83.5, 82.0, 80.8, 79.2, 78.5],
+                        borderColor: '#FF6B00', // Nossa cor primária
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#050505',
+                        pointBorderColor: '#FF6B00',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        fill: true,
+                        tension: 0.4 // Deixa a linha curva/suave (bezier)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false // Oculta a legenda padrão para ficar mais limpo
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(25, 25, 25, 0.9)',
+                            titleColor: '#A0A0A0',
+                            bodyColor: '#FFFFFF',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y + ' kg';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#A0A0A0',
+                                padding: 10
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#A0A0A0',
+                                padding: 10
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
+                }
+            });
+        });
+    </script>
+</body>
+</html>
