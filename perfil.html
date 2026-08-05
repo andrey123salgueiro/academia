@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[NOME DA ACADEMIA] - Meu Perfil</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* =========================================
+           VARIÁVEIS GLOBAIS
+           ========================================= */
+        :root {
+            --cor-primaria: #FF6B00;
+            --cor-primaria-hover: #FF8533;
+            --cor-fundo: #050505;
+            --cor-fundo-secundario: #121212;
+            --cor-superficie: rgba(25, 25, 25, 0.8);
+            --cor-texto: #FFFFFF;
+            --cor-texto-secundario: #A0A0A0;
+            --cor-borda: rgba(255, 255, 255, 0.08);
+            
+            --easing-premium: cubic-bezier(0.16, 1, 0.3, 1);
+            --transicao: all 0.3s var(--easing-premium);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+
+        body {
+            background-color: var(--cor-fundo); color: var(--cor-texto);
+            display: flex; height: 100vh; overflow: hidden;
+        }
+
+        /* =========================================
+           SIDEBAR (Padrão)
+           ========================================= */
+        .sidebar {
+            width: 280px; background-color: var(--cor-fundo-secundario);
+            border-right: 1px solid var(--cor-borda); display: flex;
+            flex-direction: column; padding: 30px 20px; z-index: 10;
+        }
+        .logo { font-size: 1.5rem; font-weight: 900; color: var(--cor-texto); text-transform: uppercase; text-decoration: none; margin-bottom: 50px; text-align: center; }
+        .logo span { color: var(--cor-primaria); }
+        .menu { list-style: none; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+        .menu-item a { display: flex; align-items: center; gap: 15px; padding: 14px 20px; color: var(--cor-texto-secundario); text-decoration: none; font-weight: 600; border-radius: 8px; transition: var(--transicao); }
+        .menu-item a:hover, .menu-item.ativo a { background-color: rgba(255, 107, 0, 0.1); color: var(--cor-primaria); }
+        .btn-sair { margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 15px; background: none; border: 1px solid var(--cor-borda); color: var(--cor-texto-secundario); border-radius: 8px; cursor: pointer; font-weight: 600; transition: var(--transicao); text-decoration: none; }
+        .btn-sair:hover { background-color: rgba(255, 0, 0, 0.1); color: #ff4d4d; border-color: #ff4d4d; }
+
+        /* =========================================
+           CONTEÚDO PRINCIPAL
+           ========================================= */
+        .conteudo {
+            flex: 1; padding: 40px; overflow-y: auto; position: relative;
+        }
+        
+        /* CABEÇALHO DO PERFIL */
+        .perfil-header {
+            display: flex; align-items: center; gap: 30px; margin-bottom: 40px;
+            animation: fadeDown 0.8s var(--easing-premium) forwards;
+            background: var(--cor-superficie); padding: 30px; border-radius: 16px; border: 1px solid var(--cor-borda);
+        }
+        .avatar-container { position: relative; }
+        .avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--cor-primaria); }
+        .btn-editar-foto { position: absolute; bottom: 0; right: 0; background: var(--cor-primaria); color: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: var(--transicao); }
+        .btn-editar-foto:hover { transform: scale(1.1); background: var(--cor-primaria-hover); }
+
+        .perfil-info h1 { font-size: 2rem; margin-bottom: 5px; }
+        .perfil-info p { color: var(--cor-texto-secundario); font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .tag-objetivo { background: rgba(76, 175, 80, 0.15); color: #4CAF50; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+
+        /* =========================================
+           GRID DE CONFIGURAÇÕES
+           ========================================= */
+        .grid-perfil {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px;
+            animation: fadeUp 0.8s var(--easing-premium) forwards;
+        }
+
+        .card-secao {
+            background: var(--cor-superficie); border: 1px solid var(--cor-borda); border-radius: 16px; padding: 25px; display: flex; flex-direction: column; gap: 20px;
+        }
+        .card-secao h3 { display: flex; align-items: center; gap: 10px; font-size: 1.2rem; color: var(--cor-texto); border-bottom: 1px solid var(--cor-borda); padding-bottom: 15px; }
+        .card-secao h3 i { color: var(--cor-primaria); font-size: 1.5rem; }
+
+        /* Lista de Dados */
+        .lista-dados { display: flex; flex-direction: column; gap: 15px; }
+        .dado-item { display: flex; justify-content: space-between; align-items: center; }
+        .dado-label { color: var(--cor-texto-secundario); font-size: 0.95rem; }
+        .dado-valor { font-weight: 700; font-size: 1.05rem; }
+
+        /* Botões de Ação no Card */
+        .btn-outline { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--cor-primaria); color: var(--cor-primaria); border-radius: 8px; font-weight: 700; cursor: pointer; transition: var(--transicao); margin-top: auto; }
+        .btn-outline:hover { background: rgba(255, 107, 0, 0.1); }
+        
+        .btn-fill { width: 100%; padding: 12px; background: var(--cor-primaria); border: none; color: #fff; border-radius: 8px; font-weight: 700; cursor: pointer; transition: var(--transicao); margin-top: auto; }
+        .btn-fill:hover { background: var(--cor-primaria-hover); }
+
+        /* Badges de Conquistas */
+        .badges-grid { display: flex; gap: 15px; flex-wrap: wrap; }
+        .badge-item { background: rgba(255,255,255,0.05); border: 1px solid var(--cor-borda); padding: 15px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; min-width: 80px; text-align: center; }
+        .badge-item i { font-size: 2rem; color: #FFD700; }
+        .badge-item span { font-size: 0.8rem; font-weight: 600; color: var(--cor-texto-secundario); }
+
+        /* Toggles (Interruptores tipo Apple) */
+        .toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
+        .toggle-info { display: flex; align-items: center; gap: 15px; }
+        .toggle-info i { font-size: 1.5rem; color: var(--cor-texto); }
+        
+        .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--cor-primaria); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <a href="index.html" class="logo"> [NOME] <span>APP</span> </a>
+        <ul class="menu">
+            <li class="menu-item"><a href="dashboard.html"><i class="ph ph-squares-four"></i> Painel</a></li>
+            <li class="menu-item"><a href="treinos.html"><i class="ph ph-barbell"></i> Meus Treinos</a></li>
+            <li class="menu-item"><a href="evolucao.html"><i class="ph ph-chart-line-up"></i> Evolução</a></li>
+            <li class="menu-item"><a href="dietas.html"><i class="ph ph-book-open-text"></i> Dietas & Guias</a></li>
+            <li class="menu-item ativo"><a href="perfil.html"><i class="ph ph-user"></i> Perfil</a></li>
+        </ul>
+        <a href="index.html" class="btn-sair"><i class="ph ph-sign-out"></i> Sair</a>
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="conteudo">
+        
+        <!-- CABEÇALHO DO PERFIL -->
+        <header class="perfil-header">
+            <div class="avatar-container">
+                <!-- Imagem de placeholder -->
+                <img src="https://ui-avatars.com/api/?name=Aluno+Fit&background=FF6B00&color=fff&size=150" alt="Avatar" class="avatar">
+                <button class="btn-editar-foto"><i class="ph ph-camera"></i></button>
+            </div>
+            <div class="perfil-info">
+                <h1>João Silva</h1>
+                <p><i class="ph ph-map-pin"></i> São Paulo, SP</p>
+                <span class="tag-objetivo">Foco: Hipertrofia</span>
+            </div>
+        </header>
+
+        <!-- GRID DE CARTÕES -->
+        <div class="grid-perfil">
+            
+            <!-- CARD: BIOMETRIA -->
+            <div class="card-secao">
+                <h3><i class="ph ph-heart-beat"></i> Biometria e Dados</h3>
+                <div class="lista-dados">
+                    <div class="dado-item"><span class="dado-label">Idade</span> <span class="dado-valor">28 anos</span></div>
+                    <div class="dado-item"><span class="dado-label">Altura</span> <span class="dado-valor">1.78m</span></div>
+                    <div class="dado-item"><span class="dado-label">Peso Atual</span> <span class="dado-valor">76 kg</span></div>
+                    <div class="dado-item"><span class="dado-label">IMC</span> <span class="dado-valor" style="color: #4CAF50;">24.0 (Normal)</span></div>
+                </div>
+                <button class="btn-outline">Atualizar Medidas</button>
+            </div>
+
+            <!-- CARD: ASSINATURA -->
+            <div class="card-secao">
+                <h3><i class="ph ph-star"></i> Seu Plano</h3>
+                <div class="lista-dados">
+                    <div class="dado-item"><span class="dado-label">Status</span> <span class="dado-valor" style="color: var(--cor-primaria);">PRO Ativo</span></div>
+                    <div class="dado-item"><span class="dado-label">Validade</span> <span class="dado-valor">15/11/2026</span></div>
+                    <div class="dado-item"><span class="dado-label">Frequência Semanal</span> <span class="dado-valor">4 a 5 dias</span></div>
+                </div>
+                <button class="btn-fill">Gerenciar Assinatura</button>
+            </div>
+
+            <!-- CARD: CONQUISTAS -->
+            <div class="card-secao">
+                <h3><i class="ph ph-medal"></i> Conquistas</h3>
+                <div class="badges-grid">
+                    <div class="badge-item">
+                        <i class="ph ph-fire"></i>
+                        <span>10 Dias Seguidos</span>
+                    </div>
+                    <div class="badge-item">
+                        <i class="ph ph-barbell"></i>
+                        <span>Força Bruta</span>
+                    </div>
+                    <div class="badge-item" style="opacity: 0.4;">
+                        <i class="ph ph-lock-key"></i>
+                        <span>Mês Perfeito</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD: INTEGRAÇÕES & PREFERÊNCIAS -->
+            <div class="card-secao">
+                <h3><i class="ph ph-plugs-connected"></i> Integrações</h3>
+                
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <i class="ph ph-watch"></i>
+                        <span class="dado-label">Apple Health / Google Fit</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <i class="ph ph-bell-ringing"></i>
+                        <span class="dado-label">Lembretes de Treino</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-item">
+                    <div class="toggle-info">
+                        <i class="ph ph-chat-centered-text"></i>
+                        <span class="dado-label">Mensagens do Personal</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>
