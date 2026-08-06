@@ -127,6 +127,61 @@
         @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* =========================================
+           MODAIS (Popups)
+           ========================================= */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; opacity: 0; pointer-events: none; transition: var(--transicao);
+        }
+
+        .modal-overlay.ativo {
+            opacity: 1; pointer-events: auto;
+        }
+
+        .modal-box {
+            background: var(--cor-fundo-secundario); border: 1px solid var(--cor-borda);
+            border-radius: 16px; padding: 30px; width: 90%; max-width: 450px;
+            transform: translateY(20px); transition: var(--transicao);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .modal-overlay.ativo .modal-box { transform: translateY(0); }
+
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 25px; border-bottom: 1px solid var(--cor-borda); padding-bottom: 15px;
+        }
+        
+        .modal-header h3 { font-size: 1.3rem; }
+        .btn-fechar { background: none; border: none; color: var(--cor-texto-secundario); cursor: pointer; font-size: 1.5rem; transition: var(--transicao); }
+        .btn-fechar:hover { color: #ff4d4d; }
+
+        /* Formulários e Listas do Modal */
+        .form-grupo { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+        .form-grupo label { font-size: 0.9rem; color: var(--cor-texto-secundario); font-weight: 600; }
+        .form-grupo input, .form-grupo select {
+            background: var(--cor-fundo); border: 1px solid var(--cor-borda); color: var(--cor-texto);
+            padding: 12px; border-radius: 8px; font-family: 'Montserrat', sans-serif;
+        }
+        .form-grupo input:focus, .form-grupo select:focus { outline: none; border-color: var(--cor-primaria); }
+
+        .lista-biblioteca { display: flex; flex-direction: column; gap: 10px; }
+        .item-biblioteca {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; background: rgba(255,255,255,0.02); border: 1px solid var(--cor-borda);
+            border-radius: 8px; cursor: pointer; transition: var(--transicao);
+        }
+        .item-biblioteca:hover { border-color: var(--cor-primaria); background: rgba(255, 107, 0, 0.05); }
+
+        .btn-salvar {
+            width: 100%; padding: 14px; background: var(--cor-primaria); color: #fff; border: none;
+            border-radius: 8px; font-weight: 700; cursor: pointer; transition: var(--transicao);
+        }
+        .btn-salvar:hover { background: var(--cor-primaria-hover); }
+
     </style>
 </head>
 <body>
@@ -266,5 +321,112 @@
         </div>
     </main>
 
+<!-- MODAL: CRIAR TREINO -->
+    <div class="modal-overlay" id="modalCriar">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Criar Novo Treino</h3>
+                <button class="btn-fechar" onclick="fecharModais()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="form-grupo">
+                <label>Nome do Treino</label>
+                <input type="text" placeholder="Ex: Treino C - Pernas">
+            </div>
+            <div class="form-grupo">
+                <label>Dias da Semana</label>
+                <select>
+                    <option>Segunda e Quinta</option>
+                    <option>Terça e Sexta</option>
+                    <option>Quarta e Sábado</option>
+                </select>
+            </div>
+            <button class="btn-salvar" onclick="fecharModais()">Salvar e Adicionar Exercícios</button>
+        </div>
+    </div>
+
+    <!-- MODAL: BIBLIOTECA -->
+    <div class="modal-overlay" id="modalBiblioteca">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Biblioteca de Treinos</h3>
+                <button class="btn-fechar" onclick="fecharModais()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="lista-biblioteca">
+                <div class="item-biblioteca">
+                    <div>
+                        <strong>Hipertrofia Iniciante</strong>
+                        <p style="font-size: 0.8rem; color: var(--cor-texto-secundario);">Treino AB - 4x na semana</p>
+                    </div>
+                    <i class="ph ph-download-simple" style="color: var(--cor-primaria); font-size: 1.2rem;"></i>
+                </div>
+                <div class="item-biblioteca">
+                    <div>
+                        <strong>Seca Gordura (Cutting)</strong>
+                        <p style="font-size: 0.8rem; color: var(--cor-texto-secundario);">Circuito Funcional</p>
+                    </div>
+                    <i class="ph ph-download-simple" style="color: var(--cor-primaria); font-size: 1.2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <script>
+        // Lógica para Abrir e Fechar Modais
+        const modalCriar = document.getElementById('modalCriar');
+        const modalBiblioteca = document.getElementById('modalBiblioteca');
+
+        document.querySelector('.btn-novo').addEventListener('click', () => {
+            modalCriar.classList.add('ativo');
+        });
+
+        document.querySelector('.btn-biblioteca').addEventListener('click', () => {
+            modalBiblioteca.classList.add('ativo');
+        });
+
+        function fecharModais() {
+            modalCriar.classList.remove('ativo');
+            modalBiblioteca.classList.remove('ativo');
+        }
+
+        // Lógica do Botão Iniciar (Vira um Cronômetro e muda pra vermelho)
+        const botoesIniciar = document.querySelectorAll('.btn-iniciar');
+
+        botoesIniciar.forEach(botao => {
+            let intervalo;
+            let segundos = 0;
+            let rodando = false;
+
+            // Salva a cor original para poder restaurar depois
+            const corOriginal = botao.style.backgroundColor || '#4CAF50';
+
+            botao.addEventListener('click', function() {
+                if (!rodando) {
+                    // INICIAR O TREINO
+                    rodando = true;
+                    this.style.backgroundColor = '#ff4d4d'; // Fica vermelho
+                    this.style.boxShadow = '0 5px 15px rgba(255, 77, 77, 0.4)';
+                    
+                    intervalo = setInterval(() => {
+                        segundos++;
+                        let min = Math.floor(segundos / 60).toString().padStart(2, '0');
+                        let seg = (segundos % 60).toString().padStart(2, '0');
+                        this.innerHTML = `<i class="ph ph-stop"></i> Parar (${min}:${seg})`;
+                    }, 1000);
+                } else {
+                    // PARAR O TREINO
+                    rodando = false;
+                    clearInterval(intervalo);
+                    segundos = 0;
+                    this.style.backgroundColor = corOriginal; // Volta pra cor original
+                    this.style.boxShadow = '';
+                    this.innerHTML = `<i class="ph ph-play"></i> Iniciar`;
+                    
+                    // Aviso de parabéns
+                    alert("Treino finalizado e salvo no seu histórico! Bom trabalho! 💪");
+                }
+            });
+        });
+    </script>
+    
 </body>
 </html>
