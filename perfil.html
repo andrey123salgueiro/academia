@@ -121,6 +121,43 @@
         @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* =========================================
+           MODAIS (Popups)
+           ========================================= */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; opacity: 0; pointer-events: none; transition: var(--transicao);
+        }
+
+        .modal-overlay.ativo { opacity: 1; pointer-events: auto; }
+
+        .modal-box {
+            background: var(--cor-fundo-secundario); border: 1px solid var(--cor-borda);
+            border-radius: 16px; padding: 30px; width: 90%; max-width: 400px;
+            transform: translateY(20px); transition: var(--transicao);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .modal-overlay.ativo .modal-box { transform: translateY(0); }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--cor-borda); padding-bottom: 15px; }
+        .modal-header h3 { font-size: 1.3rem; }
+        .btn-fechar { background: none; border: none; color: var(--cor-texto-secundario); cursor: pointer; font-size: 1.5rem; transition: var(--transicao); }
+        .btn-fechar:hover { color: #ff4d4d; }
+
+        .form-grupo { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+        .form-grupo label { font-size: 0.9rem; color: var(--cor-texto-secundario); font-weight: 600; }
+        .form-grupo input { background: var(--cor-fundo); border: 1px solid var(--cor-borda); color: var(--cor-texto); padding: 12px; border-radius: 8px; font-family: 'Montserrat', sans-serif; font-weight: 600; }
+        .form-grupo input:focus { outline: none; border-color: var(--cor-primaria); }
+
+        .btn-salvar { width: 100%; padding: 14px; background: var(--cor-primaria); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: var(--transicao); }
+        .btn-salvar:hover { background: var(--cor-primaria-hover); }
+        
+        .btn-cancelar-plano { width: 100%; padding: 14px; background: transparent; color: #ff4d4d; border: 1px solid #ff4d4d; border-radius: 8px; font-weight: 700; cursor: pointer; transition: var(--transicao); margin-top: 10px; }
+        .btn-cancelar-plano:hover { background: rgba(255, 77, 77, 0.1); }
+
     </style>
 </head>
 <body>
@@ -241,5 +278,93 @@
         </div>
     </main>
 
+    <!-- Input Invisível para Upload de Imagem -->
+    <input type="file" id="inputFoto" accept="image/*" style="display: none;">
+
+    <!-- MODAL: ATUALIZAR MEDIDAS -->
+    <div class="modal-overlay" id="modalMedidas">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Atualizar Biometria</h3>
+                <button class="btn-fechar" onclick="fecharModaisPerfil()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="form-grupo">
+                <label>Novo Peso (kg)</label>
+                <input type="number" step="0.1" placeholder="Ex: 75.5">
+            </div>
+            <div class="form-grupo">
+                <label>Nova Altura (m)</label>
+                <input type="number" step="0.01" placeholder="Ex: 1.78">
+            </div>
+            <button class="btn-salvar" onclick="salvarMedidas()">Salvar Atualizações</button>
+        </div>
+    </div>
+
+    <!-- MODAL: GERENCIAR ASSINATURA -->
+    <div class="modal-overlay" id="modalAssinatura">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Gerenciar Plano</h3>
+                <button class="btn-fechar" onclick="fecharModaisPerfil()"><i class="ph ph-x"></i></button>
+            </div>
+            <p style="color: var(--cor-texto-secundario); margin-bottom: 20px; font-size: 0.9rem; line-height: 1.5;">
+                Você está atualmente no <strong>Plano PRO</strong>. Aproveite todos os benefícios até 15/11/2026.
+            </p>
+            <button class="btn-salvar" onclick="fecharModaisPerfil()">Fazer Upgrade (Anual)</button>
+            <button class="btn-cancelar-plano" onclick="fecharModaisPerfil()">Cancelar Assinatura</button>
+        </div>
+    </div>
+
+<script>
+        // 1. Seletores dos Elementos na Tela
+        const btnMedidas = document.querySelector('.card-secao .btn-outline'); // Pega o botão de atualizar medidas
+        const btnAssinatura = document.querySelector('.card-secao .btn-fill'); // Pega o botão de gerenciar plano
+        const modalMedidas = document.getElementById('modalMedidas');
+        const modalAssinatura = document.getElementById('modalAssinatura');
+
+        // Seletores para a Foto
+        const btnFoto = document.querySelector('.btn-editar-foto');
+        const inputFoto = document.getElementById('inputFoto');
+        const imgAvatar = document.querySelector('.avatar');
+
+        // 2. Lógica de Abrir/Fechar Modais
+        btnMedidas.addEventListener('click', () => modalMedidas.classList.add('ativo'));
+        btnAssinatura.addEventListener('click', () => modalAssinatura.classList.add('ativo'));
+
+        function fecharModaisPerfil() {
+            modalMedidas.classList.remove('ativo');
+            modalAssinatura.classList.remove('ativo');
+        }
+
+        function salvarMedidas() {
+            // Em um app real, aqui enviaríamos os dados para o banco de dados
+            alert("Medidas atualizadas com sucesso! O novo IMC foi recalculado.");
+            fecharModaisPerfil();
+        }
+
+        // 3. A MÁGICA DA FOTO DE PERFIL (FileReader API)
+        // Quando clica no botão da câmera, ele "finge" um clique no input de arquivo invisível
+        btnFoto.addEventListener('click', () => {
+            inputFoto.click(); 
+        });
+
+        // Quando o usuário escolhe uma foto no celular/PC:
+        inputFoto.addEventListener('change', function(event) {
+            const arquivo = event.target.files[0]; // Pega o arquivo selecionado
+            
+            if (arquivo) {
+                const leitor = new FileReader(); // Cria o leitor de arquivos do navegador
+                
+                // Quando o leitor carregar a imagem:
+                leitor.onload = function(e) {
+                    imgAvatar.src = e.target.result; // Troca a imagem da bolinha pela foto nova
+                }
+                
+                // Lê o arquivo como uma URL de dados
+                leitor.readAsDataURL(arquivo);
+            }
+        });
+    </script>
+    
 </body>
 </html>
