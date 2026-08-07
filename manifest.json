@@ -1,0 +1,22 @@
+{
+  "name": "FitPulse Academia",
+  "short_name": "FitPulse",
+  "description": "Seu aplicativo de treino, perfil e acompanhamento de medidas.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#FF6B00",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192/FF6B00/000000?text=FitPulse",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512/FF6B00/000000?text=FitPulse",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
