@@ -43,7 +43,7 @@
             position: relative;
         }
 
-        /* Fundo Animado (Mesmo da Landing Page) */
+        /* Fundo Animado */
         body::before {
             content: '';
             position: absolute;
@@ -149,7 +149,7 @@
         form {
             display: flex;
             flex-direction: column;
-            gap: 30px;
+            gap: 25px;
             transition: opacity 0.4s ease, transform 0.4s var(--easing-premium);
         }
 
@@ -191,9 +191,9 @@
             transition: var(--transicao);
         }
 
-        /* O Pulo do Gato: Animação do Floating Label */
+        /* Animação do Floating Label */
         .input-group input:focus ~ label,
-        .input-group input:valid ~ label {
+        .input-group input:not(:placeholder-shown) ~ label {
             top: -16px;
             font-size: 0.8rem;
             color: var(--cor-primaria);
@@ -209,7 +209,7 @@
             align-items: center;
             font-size: 0.9rem;
             color: var(--cor-texto-secundario);
-            margin-top: -10px;
+            margin-top: -5px;
         }
 
         .opcoes-extras a {
@@ -220,6 +220,28 @@
 
         .opcoes-extras a:hover {
             color: var(--cor-primaria);
+        }
+
+        /* MENSAGENS DE ERRO E STATUS */
+        .msg-status {
+            font-size: 0.85rem;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .msg-erro {
+            background-color: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+        }
+
+        .msg-sucesso {
+            background-color: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #6ee7b7;
         }
 
         /* =========================================
@@ -237,14 +259,22 @@
             cursor: pointer;
             transition: var(--transicao);
             letter-spacing: 1px;
-            margin-top: 10px;
+            margin-top: 5px;
             box-shadow: 0 10px 20px -10px rgba(255, 107, 0, 0.4);
         }
 
-        .btn-submit:hover {
+        .btn-submit:hover:not(:disabled) {
             transform: translateY(-3px);
             background-color: var(--cor-primaria-hover);
             box-shadow: 0 15px 25px -10px rgba(255, 107, 0, 0.6);
+        }
+
+        .btn-submit:disabled {
+            background-color: #444;
+            color: #888;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
         }
 
         /* =========================================
@@ -304,14 +334,16 @@
             <div class="form-wrapper">
                 
                 <!-- FORMULÁRIO DE LOGIN -->
-                <form id="form-login" class="form-show">
+                <form id="form-login" class="form-show" onsubmit="validarLogin(event)">
+                    <div id="msg-login" class="msg-status msg-erro"></div>
+
                     <div class="input-group">
-                        <input type="email" id="email-login" required autocomplete="off">
+                        <input type="email" id="email-login" required placeholder=" " autocomplete="off">
                         <label for="email-login">E-mail</label>
                     </div>
                     
                     <div class="input-group">
-                        <input type="password" id="senha-login" required>
+                        <input type="password" id="senha-login" required placeholder=" ">
                         <label for="senha-login">Senha</label>
                     </div>
 
@@ -322,23 +354,25 @@
                         <a href="#">Esqueceu a senha?</a>
                     </div>
 
-                   <button type="button" class="btn-submit" onclick="window.location.href='dashboard.html'">Acessar Treinos</button>
+                    <button type="submit" id="btn-login" class="btn-submit">Acessar Treinos</button>
                 </form>
 
                 <!-- FORMULÁRIO DE CADASTRO -->
-                <form id="form-cadastro" class="form-hide">
+                <form id="form-cadastro" class="form-hide" onsubmit="validarCadastro(event)">
+                    <div id="msg-cadastro" class="msg-status msg-erro"></div>
+
                     <div class="input-group">
-                        <input type="text" id="nome-cadastro" required autocomplete="off">
+                        <input type="text" id="nome-cadastro" required placeholder=" " autocomplete="off">
                         <label for="nome-cadastro">Nome Completo</label>
                     </div>
 
                     <div class="input-group">
-                        <input type="email" id="email-cadastro" required autocomplete="off">
+                        <input type="email" id="email-cadastro" required placeholder=" " autocomplete="off">
                         <label for="email-cadastro">E-mail</label>
                     </div>
                     
                     <div class="input-group">
-                        <input type="password" id="senha-cadastro" required>
+                        <input type="password" id="senha-cadastro" required placeholder=" ">
                         <label for="senha-cadastro">Criar Senha</label>
                     </div>
 
@@ -350,6 +384,113 @@
     </main>
 
     <script>
+        // CONFIGURAÇÃO DE SEGURANÇA (MÁXIMO 5 TENTATIVAS)
+        const MAX_TENTATIVAS = 5;
+        let tentativasErradas = parseInt(localStorage.getItem('tentativas_login_fitpulse') || '0');
+
+        // Verificar limite ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            checarBloqueioLogin();
+        });
+
+        function checarBloqueioLogin() {
+            const btnLogin = document.getElementById('btn-login');
+            const msgBox = document.getElementById('msg-login');
+
+            if (tentativasErradas >= MAX_TENTATIVAS) {
+                btnLogin.disabled = true;
+                btnLogin.textContent = 'Acesso Bloqueado';
+                msgBox.textContent = 'Sua conta foi temporariamente bloqueada por excesso de tentativas incorretas (5/5).';
+                msgBox.className = 'msg-status msg-erro';
+                msgBox.style.display = 'block';
+                return true;
+            }
+            return false;
+        }
+
+        // --- LÓGICA DE LOGIN ---
+        function validarLogin(event) {
+            event.preventDefault();
+
+            if (checarBloqueioLogin()) return;
+
+            const email = document.getElementById('email-login').value.trim();
+            const senha = document.getElementById('senha-login').value.trim();
+            const msgBox = document.getElementById('msg-login');
+
+            // Carregar usuários cadastrados no localStorage
+            const usuariosCadastrados = JSON.parse(localStorage.getItem('usuarios_fitpulse') || '[]');
+
+            // Validação com conta de teste padrão ou contas cadastradas pelo usuário
+            const usuarioValido = usuariosCadastrados.find(u => u.email === email && u.senha === senha) ||
+                                  (email === 'admin@academia.com' && senha === '123456');
+
+            if (usuarioValido) {
+                // Sucesso: reseta as tentativas e redireciona para a aplicação
+                localStorage.setItem('tentativas_login_fitpulse', '0');
+                localStorage.setItem('usuario_logado', email);
+                
+                msgBox.textContent = 'Login efetuado com sucesso! Redirecionando...';
+                msgBox.className = 'msg-status msg-sucesso';
+                msgBox.style.display = 'block';
+
+                setTimeout(() => {
+                    window.location.href = 'painel.html';
+                }, 1000);
+            } else {
+                // Falha: incrementa o número de tentativas
+                tentativasErradas++;
+                localStorage.setItem('tentativas_login_fitpulse', tentativasErradas.toString());
+
+                const restantes = MAX_TENTATIVAS - tentativasErradas;
+
+                if (restantes > 0) {
+                    msgBox.textContent = `E-mail ou senha incorretos! Você tem mais ${restantes} tentativa(s).`;
+                    msgBox.className = 'msg-status msg-erro';
+                    msgBox.style.display = 'block';
+                } else {
+                    checarBloqueioLogin();
+                }
+            }
+        }
+
+        // --- LÓGICA DE CADASTRO ---
+        function validarCadastro(event) {
+            event.preventDefault();
+
+            const nome = document.getElementById('nome-cadastro').value.trim();
+            const email = document.getElementById('email-cadastro').value.trim();
+            const senha = document.getElementById('senha-cadastro').value.trim();
+            const msgBox = document.getElementById('msg-cadastro');
+
+            if (!nome || !email || !senha) {
+                msgBox.textContent = 'Por favor, preencha todos os campos.';
+                msgBox.className = 'msg-status msg-erro';
+                msgBox.style.display = 'block';
+                return;
+            }
+
+            let usuarios = JSON.parse(localStorage.getItem('usuarios_fitpulse') || '[]');
+
+            if (usuarios.some(u => u.email === email)) {
+                msgBox.textContent = 'Este e-mail já está cadastrado no sistema.';
+                msgBox.className = 'msg-status msg-erro';
+                msgBox.style.display = 'block';
+                return;
+            }
+
+            // Salvar novo usuário no localStorage
+            usuarios.push({ nome, email, senha });
+            localStorage.setItem('usuarios_fitpulse', JSON.stringify(usuarios));
+
+            alert('Conta criada com sucesso! Faça login para continuar.');
+            
+            // Limpar formulário, preencher email do login e trocar para a aba de login
+            document.getElementById('form-cadastro').reset();
+            document.getElementById('email-login').value = email;
+            trocarAba('login');
+        }
+
         // Lógica de alternância de abas
         function trocarAba(aba) {
             const formLogin = document.getElementById('form-login');
@@ -357,11 +498,15 @@
             const indicador = document.getElementById('indicador');
             const botoes = document.querySelectorAll('.tab-btn');
 
+            // Limpar mensagens ao trocar de aba
+            document.getElementById('msg-login').style.display = 'none';
+            document.getElementById('msg-cadastro').style.display = 'none';
+
             if (aba === 'login') {
                 formCadastro.classList.replace('form-show', 'form-hide');
                 setTimeout(() => {
                     formLogin.classList.replace('form-hide', 'form-show');
-                }, 100); // pequeno delay para não sobrepor
+                }, 100);
                 
                 indicador.style.transform = 'translateX(0)';
                 botoes[0].classList.add('active');
